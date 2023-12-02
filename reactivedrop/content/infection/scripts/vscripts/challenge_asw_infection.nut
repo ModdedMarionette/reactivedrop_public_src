@@ -901,8 +901,12 @@ function JoinHuman(hMarine)
 	hSprite.Activate();
 	g_teamHuman[hMarine] <- [hSprite];
 	hMarine.SetTeam(1);
-	hMarine.SetMaxHealth(GetNewHealth(hMarine));
-	hMarine.SetHealth(GetNewHealth(hMarine));
+	local newHealth = GetNewHealth(hMarine);
+	if (hMarine.GetMaxHealth() != newHealth)
+	{
+		hMarine.SetMaxHealth(newHealth);
+		hMarine.SetHealth(newHealth);
+	}
 	return;
 }
 
@@ -945,8 +949,12 @@ function JoinZombie(hMarine)
 	hSprite.Activate();
 	g_teamZombie[hMarine] <- [hSprite, GetSlotWeapon(hMarine, 0), GetSlotWeapon(hMarine, 2), 200, 0];
 	hMarine.SetTeam(2);
-	hMarine.SetMaxHealth(GetNewHealth(hMarine)*2);
-	hMarine.SetHealth(GetNewHealth(hMarine)*2);
+	local newHealth = GetNewHealth(hMarine)*2;
+	if (hMarine.GetMaxHealth() != newHealth)
+	{
+		hMarine.SetMaxHealth(newHealth);
+		hMarine.SetHealth(newHealth);
+	}
 	hMarine.SetModel("models/swarm/marine/infected_marine.mdl");
 	return;
 }
@@ -1022,7 +1030,14 @@ function UseLastStand(hMarine)
 	hBubble.Spawn();
 	hBubble.Activate();
 	g_lastHuman[hMarine] <- hBubble;
-	hMarine.SetHealth(GetNewHealth(hMarine));
+	local mod = 0.7 + 0.3*g_teamZombie.len();
+	if (mod < 1)
+	{
+		mod = 1.0;
+	}
+	local newHealth = GetNewHealth(hMarine)*mod;
+	hMarine.SetMaxHealth(newHealth);
+	hMarine.SetHealth(newHealth);
 	ClientPrint(null, 3, "#asw_infection_lastStand_used", NameFeed(hMarine));
 	ClientPrint(null, 3, "#asw_infection_lastStand_timeAdd");
 }
